@@ -1,43 +1,196 @@
-import { api } from './api.js';
-import { unwrap } from '../utils/format.js';
+
+import { api } from "./api.js";
+import { unwrap } from "../utils/format.js";
+
+// =========================================================
+// GENERIC CRUD
+// =========================================================
 
 const crud = (path) => ({
-  list: (params) => api.get(`${path}/`, { params }).then((r) => r.data),
-  get: (id) => api.get(`${path}/${id}/`).then(unwrap),
-  create: (d) => api.post(`${path}/`, d).then(unwrap),
-  update: (id, d) => api.patch(`${path}/${id}/`, d).then(unwrap),
-  remove: (id) => api.delete(`${path}/${id}/`),
+  list: (params) =>
+    api
+      .get(`${path}/`, { params })
+      .then((response) => response.data),
+
+  get: (id) =>
+    api
+      .get(`${path}/${id}/`)
+      .then(unwrap),
+
+  create: (data) =>
+    api
+      .post(`${path}/`, data)
+      .then(unwrap),
+
+  update: (id, data) =>
+    api
+      .patch(`${path}/${id}/`, data)
+      .then(unwrap),
+
+  remove: (id) =>
+    api.delete(`${path}/${id}/`),
 });
 
-export const productService = crud('/inventory/products');
-export const categoryService = crud('/inventory/categories');
-export const brandService = crud('/inventory/brands');
-export const userService = crud('/accounts/users');
-export const customerService = crud('/sales/customers');
+// =========================================================
+// PRODUCT
+// =========================================================
+
+export const productService = crud(
+  "/inventory/products"
+);
+
+// =========================================================
+// CATEGORY
+// =========================================================
+
+export const categoryService = crud(
+  "/inventory/categories"
+);
+
+// =========================================================
+// BRAND
+// =========================================================
+
+export const brandService = crud(
+  "/inventory/brands"
+);
+
+// =========================================================
+// USERS
+// =========================================================
+
+export const userService = crud(
+  "/accounts/users"
+);
+
+// =========================================================
+// CUSTOMERS
+// =========================================================
+
+export const customerService = crud(
+  "/sales/customers"
+);
+
+// =========================================================
+// INVENTORY
+// =========================================================
+
 export const inventoryService = {
-  adjustStock: (d) => api.post('/inventory/stock/adjust/', d).then(unwrap),
-  getLowStock: () => api.get('/inventory/low-stock/').then((r) => r.data),
-  getTransactions: (params) => api.get('/inventory/stock/', { params }).then((r) => r.data),
+  adjustStock: (data) =>
+    api
+      .post("/inventory/stock/adjust/", data)
+      .then(unwrap),
+
+  getLowStock: () =>
+    api
+      .get("/inventory/low-stock/")
+      .then((response) => response.data),
+
+  getTransactions: (params) =>
+    api
+      .get("/inventory/stock/", { params })
+      .then((response) => response.data),
 };
+
+// =========================================================
+// SALES
+// =========================================================
+
 export const salesService = {
-  getSales: (params) => api.get('/sales/', { params }).then((r) => r.data),
-  getSale: (id) => api.get(`/sales/${id}/`).then((r) => r.data),
-  createSale: (d) => api.post('/sales/', d).then(unwrap),
-  getRecentSales: (limit = 8) => api.get('/sales/recent/', { params: { limit } }).then((r) => r.data),
+  getSales: (params) =>
+    api
+      .get("/sales/", { params })
+      .then((response) => response.data),
+
+  getSale: (id) =>
+    api
+      .get(`/sales/${id}/`)
+      .then((response) => response.data),
+
+  createSale: (data) =>
+    api
+      .post("/sales/", data)
+      .then(unwrap),
+
+  getRecentSales: (limit = 8) =>
+    api
+      .get("/sales/recent/", {
+        params: { limit },
+      })
+      .then((response) => response.data),
 };
+
+// =========================================================
+// REPORTS
+// =========================================================
+
 export const reportService = {
-  getDashboard: () => api.get('/reports/dashboard/').then((r) => r.data),
-  getSalesReport: (p) => api.get('/reports/sales/', { params: p }).then((r) => r.data),
-  getDailySales: (p) => api.get('/reports/daily-sales/', { params: p }).then((r) => r.data),
-  getMonthlySales: (p) => api.get('/reports/monthly-sales/', { params: p }).then((r) => r.data),
-  getTopProducts: (p) => api.get('/reports/top-products/', { params: p }).then((r) => r.data),
-  getPaymentSummary: (p) => api.get('/reports/payment-summary/', { params: p }).then((r) => r.data),
+  getDashboard: () =>
+    api
+      .get("/reports/dashboard/")
+      .then((response) => response.data),
+
+  getSalesReport: (params) =>
+    api
+      .get("/reports/sales/", { params })
+      .then((response) => response.data),
+
+  getDailySales: (params) =>
+    api
+      .get("/reports/daily-sales/", { params })
+      .then((response) => response.data),
+
+  getMonthlySales: (params) =>
+    api
+      .get("/reports/monthly-sales/", { params })
+      .then((response) => response.data),
+
+  getTopProducts: (params) =>
+    api
+      .get("/reports/top-products/", { params })
+      .then((response) => response.data),
+
+  getPaymentSummary: (params) =>
+    api
+      .get("/reports/payment-summary/", { params })
+      .then((response) => response.data),
 };
+
+// =========================================================
+// AUTHENTICATION
+// =========================================================
+
 export const authService = {
-  login: (username, password) => api.post('/accounts/login/', { username, password }).then((r) => r.data),
-  register: (d) => api.post('/accounts/register/', d).then((r) => r.data),
-  logout: (refresh) => api.post('/accounts/logout/', { refresh }),
-  getProfile: () => api.get('/accounts/profile/').then((r) => r.data),
-  updateProfile: (d) => api.patch('/accounts/profile/', d).then((r) => r.data),
-  changePassword: (d) => api.post('/accounts/change-password/', d).then((r) => r.data),
+  login: (username, password) =>
+    api
+      .post("/accounts/login/", {
+        username,
+        password,
+      })
+      .then((response) => response.data),
+
+  register: (data) =>
+    api
+      .post("/accounts/register/", data)
+      .then((response) => response.data),
+
+  logout: (refresh) =>
+    api.post("/accounts/logout/", {
+      refresh,
+    }),
+
+  getProfile: () =>
+    api
+      .get("/accounts/profile/")
+      .then((response) => response.data),
+
+  updateProfile: (data) =>
+    api
+      .patch("/accounts/profile/", data)
+      .then((response) => response.data),
+
+  changePassword: (data) =>
+    api
+      .post("/accounts/change-password/", data)
+      .then((response) => response.data),
 };

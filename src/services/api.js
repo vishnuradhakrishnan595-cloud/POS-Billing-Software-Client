@@ -1,20 +1,20 @@
-import axios from 'axios';
+
+import axios from "axios";
 
 const BASE = import.meta.env.VITE_API_BASE_URL;
 
 if (!BASE) {
   console.error(
-    'VITE_API_BASE_URL is not defined. Check your .env file.'
+    "VITE_API_BASE_URL is not defined. Check your .env file."
   );
 }
 
 export const api = axios.create({
   baseURL: BASE,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
-
 
 // =========================================================
 // CLEAR AUTHENTICATION
@@ -22,14 +22,13 @@ export const api = axios.create({
 
 export const clearAuth = () => {
   [
-    'access_token',
-    'refresh_token',
-    'user',
+    "access_token",
+    "refresh_token",
+    "user",
   ].forEach((key) => {
     localStorage.removeItem(key);
   });
 };
-
 
 // =========================================================
 // FORCE LOGOUT
@@ -38,11 +37,10 @@ export const clearAuth = () => {
 const forceLogout = () => {
   clearAuth();
 
-  if (window.location.pathname !== '/login') {
-    window.location.href = '/login';
+  if (window.location.pathname !== "/login") {
+    window.location.href = "/login";
   }
 };
-
 
 // =========================================================
 // REQUEST INTERCEPTOR
@@ -51,9 +49,17 @@ const forceLogout = () => {
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem("access_token");
 
-    if (token) {
+    // Do not add an old access token to login/register requests
+    const url = config.url || "";
+
+    const isAuthRequest =
+      url.includes("/accounts/login/") ||
+      url.includes("/accounts/register/") ||
+      url.includes("/accounts/token/refresh/");
+
+    if (token && !isAuthRequest) {
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -64,7 +70,6 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
 
 // =========================================================
 // RESPONSE INTERCEPTOR
@@ -85,16 +90,17 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // -----------------------------------------------------
+    // Authentication endpoints
+    // Never try to refresh these requests
+    // -----------------------------------------------------
 
-    // -----------------------------------------------------
-    // Don't refresh authentication endpoints
-    // -----------------------------------------------------
+    const requestUrl = originalRequest.url || "";
 
     const isAuthUrl =
-      /\/accounts\/(login|token\/refresh)\//.test(
-        originalRequest.url || ''
-      );
-
+      requestUrl.includes("/accounts/login/") ||
+      requestUrl.includes("/accounts/register/") ||
+      requestUrl.includes("/accounts/token/refresh/");
 
     // -----------------------------------------------------
     // Only handle 401 errors
@@ -108,69 +114,57 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-
     originalRequest._retry = true;
-
 
     // -----------------------------------------------------
     // Get refresh token
     // -----------------------------------------------------
 
-    const refreshToken =
-      localStorage.getItem('refresh_token');
-
+    const refreshToken = localStorage.getItem("refresh_token");
 
     if (!refreshToken) {
       forceLogout();
       return Promise.reject(error);
     }
 
-
     try {
-
       // ---------------------------------------------------
       // Only one refresh request at a time
       // ---------------------------------------------------
 
-      refreshing =
-        refreshing ||
-        axios
-          .post(
-            `${BASE}/accounts/token/refresh/`,
-            {
-              refresh: refreshToken,
-            }
-          )
+      if (!refreshing) {
+        refreshing = axios
+          .post(`${BASE}/accounts/token/refresh/`, {
+            refresh: refreshToken,
+          })
           .then((response) => {
+            const newAccessToken = response.data.access;
 
-            const newAccessToken =
-              response.data.access;
+            if (!newAccessToken) {
+              throw new Error("No access token returned.");
+            }
 
             localStorage.setItem(
-              'access_token',
+              "access_token",
               newAccessToken
             );
-
 
             // SimpleJWT may return a rotated refresh token
             if (response.data.refresh) {
               localStorage.setItem(
-                'refresh_token',
+                "refresh_token",
                 response.data.refresh
               );
             }
-
 
             return newAccessToken;
           })
           .finally(() => {
             refreshing = null;
           });
+      }
 
-
-      const newAccessToken =
-        await refreshing;
-
+      const newAccessToken = await refreshing;
 
       // ---------------------------------------------------
       // Retry original request
@@ -182,13 +176,9 @@ api.interceptors.response.use(
       originalRequest.headers.Authorization =
         `Bearer ${newAccessToken}`;
 
-
       return api(originalRequest);
-
     } catch (refreshError) {
-
       forceLogout();
-
       return Promise.reject(refreshError);
     }
   }

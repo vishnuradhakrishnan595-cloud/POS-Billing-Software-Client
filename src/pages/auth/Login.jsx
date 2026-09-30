@@ -1,26 +1,26 @@
-
-import { useState } from "react";
+import { useState } from 'react';
 
 import {
   Link,
   Navigate,
   useLocation,
   useNavigate,
-} from "react-router-dom";
+} from 'react-router-dom';
 
 import {
   Eye,
   EyeOff,
   Store,
   ShieldCheck,
+  Zap,
   ArrowRight,
   LockKeyhole,
   CheckCircle2,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { useAuth } from "../../context/AuthContext.jsx";
-import { useToast } from "../../context/ToastContext.jsx";
-import { getApiErrorMessage } from "../../utils/format.js";
+import { useAuth } from '../../context/AuthContext.jsx';
+import { useToast } from '../../context/ToastContext.jsx';
+import { getApiErrorMessage } from '../../utils/format.js';
 
 export default function Login() {
   const { login, isAuthenticated } = useAuth();
@@ -29,22 +29,18 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // =========================================================
-  // FORM STATE
-  // =========================================================
-
   const [form, setForm] = useState({
-    username: "",
-    password: "",
-  });
-
-  const [errors, setErrors] = useState({
-    username: "",
-    password: "",
+    username: '',
+    password: '',
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [errors, setErrors] = useState({
+    username: '',
+    password: '',
+  });
 
   // =========================================================
   // REDIRECT AUTHENTICATED USER
@@ -64,11 +60,10 @@ export default function Login() {
       [field]: value,
     }));
 
-    // Remove the error as soon as the user starts correcting it
     if (errors[field]) {
       setErrors((previous) => ({
         ...previous,
-        [field]: "",
+        [field]: '',
       }));
     }
   };
@@ -79,23 +74,18 @@ export default function Login() {
 
   const validate = () => {
     const validationErrors = {
-      username: "",
-      password: "",
+      username: '',
+      password: '',
     };
 
-    const username = form.username.trim();
-
-    if (!username) {
+    if (!form.username.trim()) {
       validationErrors.username =
-        "Username or email is required.";
+        'Username or email is required';
     }
 
     if (!form.password) {
       validationErrors.password =
-        "Password is required.";
-    } else if (form.password.length < 8) {
-      validationErrors.password =
-        "Password must contain at least 8 characters.";
+        'Password is required';
     }
 
     setErrors(validationErrors);
@@ -112,10 +102,6 @@ export default function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (loading) {
-      return;
-    }
-
     if (!validate()) {
       return;
     }
@@ -123,22 +109,18 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const username = form.username.trim();
-      const password = form.password;
-
-      console.log("LOGIN USERNAME:", username);
-
-      await login(username, password);
+      await login(
+        form.username.trim(),
+        form.password
+      );
 
       const redirectTo =
-        location.state?.from || "/dashboard";
+        location.state?.from || '/dashboard';
 
       navigate(redirectTo, {
         replace: true,
       });
     } catch (error) {
-      console.error("LOGIN ERROR:", error);
-
       toast.error(getApiErrorMessage(error));
     } finally {
       setLoading(false);
@@ -152,7 +134,7 @@ export default function Login() {
   const FormInput = ({
     label,
     field,
-    type = "text",
+    type = 'text',
     placeholder,
     autoComplete,
   }) => {
@@ -174,14 +156,13 @@ export default function Login() {
           value={form[field]}
           placeholder={placeholder}
           autoComplete={autoComplete}
-          spellCheck={false}
           onChange={(event) =>
             handleChange(field, event.target.value)
           }
           className={`h-12 w-full rounded-xl border bg-white/[0.045] px-4 text-sm font-medium text-white caret-white outline-none transition-all duration-200 placeholder:text-white/35 ${
             hasError
-              ? "border-red-500/70 focus:border-red-400 focus:ring-2 focus:ring-red-500/10"
-              : "border-white/10 focus:border-violet-500/70 focus:bg-white/[0.07] focus:ring-2 focus:ring-violet-500/10"
+              ? 'border-red-500/70 focus:border-red-400 focus:ring-2 focus:ring-red-500/10'
+              : 'border-white/10 focus:border-violet-500/70 focus:bg-white/[0.07] focus:ring-2 focus:ring-violet-500/10'
           }`}
         />
 
@@ -218,17 +199,17 @@ export default function Login() {
           <input
             id={field}
             name={field}
-            type={show ? "text" : "password"}
+            type={show ? 'text' : 'password'}
             value={form[field]}
-            placeholder="Enter password"
+            placeholder={`Enter ${label.toLowerCase()}`}
             autoComplete="current-password"
             onChange={(event) =>
               handleChange(field, event.target.value)
             }
             className={`h-12 w-full rounded-xl border bg-white/[0.045] px-4 pr-12 text-sm font-medium text-white caret-white outline-none transition-all duration-200 placeholder:text-white/35 ${
               error
-                ? "border-red-500/70 focus:border-red-400 focus:ring-2 focus:ring-red-500/10"
-                : "border-white/10 focus:border-violet-500/70 focus:bg-white/[0.07] focus:ring-2 focus:ring-violet-500/10"
+                ? 'border-red-500/70 focus:border-red-400 focus:ring-2 focus:ring-red-500/10'
+                : 'border-white/10 focus:border-violet-500/70 focus:bg-white/[0.07] focus:ring-2 focus:ring-violet-500/10'
             }`}
           />
 
@@ -236,13 +217,13 @@ export default function Login() {
             type="button"
             aria-label={
               show
-                ? "Hide password"
-                : "Show password"
+                ? 'Hide password'
+                : 'Show password'
             }
             onClick={() =>
               setShow((previous) => !previous)
             }
-            className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-white/45 transition hover:bg-white/5 hover:text-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+            className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-white/45 transition hover:bg-white/5 hover:text-violet-300"
           >
             {show ? (
               <EyeOff size={18} />
@@ -260,10 +241,6 @@ export default function Login() {
       </div>
     );
   };
-
-  // =========================================================
-  // UI
-  // =========================================================
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[#07051A] text-white">
@@ -288,8 +265,8 @@ export default function Login() {
           className="absolute inset-0 opacity-[0.035]"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)",
-            backgroundSize: "45px 45px",
+              'linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)',
+            backgroundSize: '45px 45px',
           }}
         />
       </div>
@@ -534,7 +511,7 @@ export default function Login() {
                   error={errors.password}
                 />
 
-                {/* Security Hint */}
+                {/* Password Hint */}
 
                 <div className="rounded-xl border border-white/10 bg-white/[0.025] px-4 py-3">
 
@@ -598,7 +575,7 @@ export default function Login() {
 
               {/* REGISTER */}
 
-              <div className="mt-6">
+              <div className="mt-6 border-t border-transparent pt-0">
 
                 <p className="text-center text-sm text-white/75">
 

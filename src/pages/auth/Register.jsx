@@ -46,7 +46,6 @@ export default function Register() {
       [field]: value,
     }));
 
-    // Clear only the error of the field being edited
     if (errors[field]) {
       setErrors((previous) => ({
         ...previous,
@@ -62,32 +61,18 @@ export default function Register() {
   const validate = () => {
     const validationErrors = {};
 
-    // Username
     if (!form.username.trim()) {
       validationErrors.username = "Username is required.";
-    } else if (form.username.trim().length < 3) {
-      validationErrors.username =
-        "Username must contain at least 3 characters.";
-    } else if (!/^[a-zA-Z0-9_.-]+$/.test(form.username.trim())) {
-      validationErrors.username =
-        "Username can contain only letters, numbers, dot, underscore and hyphen.";
     }
 
-    // First name
     if (!form.first_name.trim()) {
       validationErrors.first_name = "First name is required.";
-    } else if (!/^[a-zA-Z\s'-]+$/.test(form.first_name.trim())) {
-      validationErrors.first_name = "Enter a valid first name.";
     }
 
-    // Last name
     if (!form.last_name.trim()) {
       validationErrors.last_name = "Last name is required.";
-    } else if (!/^[a-zA-Z\s'-]+$/.test(form.last_name.trim())) {
-      validationErrors.last_name = "Enter a valid last name.";
     }
 
-    // Email
     if (!form.email.trim()) {
       validationErrors.email = "Email is required.";
     } else if (
@@ -96,14 +81,14 @@ export default function Register() {
       validationErrors.email = "Enter a valid email address.";
     }
 
-    // Phone
     if (!form.phone.trim()) {
       validationErrors.phone = "Phone number is required.";
-    } else if (!/^\+?[0-9\s-]{7,15}$/.test(form.phone.trim())) {
+    } else if (
+      !/^\+?[0-9\s-]{7,15}$/.test(form.phone.trim())
+    ) {
       validationErrors.phone = "Enter a valid phone number.";
     }
 
-    // Password
     if (!form.password) {
       validationErrors.password = "Password is required.";
     } else if (form.password.length < 8) {
@@ -111,7 +96,6 @@ export default function Register() {
         "Password must contain at least 8 characters.";
     }
 
-    // Confirm password
     if (!form.password2) {
       validationErrors.password2 =
         "Please confirm your password.";
@@ -159,7 +143,6 @@ export default function Register() {
       );
 
       setForm(INITIAL_FORM);
-      setErrors({});
 
       navigate("/login");
     } catch (error) {
@@ -246,11 +229,7 @@ export default function Register() {
             type={show ? "text" : "password"}
             value={form[field]}
             placeholder={`Enter ${label.toLowerCase()}`}
-            autoComplete={
-              field === "password"
-                ? "new-password"
-                : "new-password"
-            }
+            autoComplete="new-password"
             onChange={(event) =>
               handleChange(field, event.target.value)
             }
@@ -294,6 +273,7 @@ export default function Register() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[#07051A] text-white">
+
       {/* Background */}
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute -left-40 -top-40 h-[420px] w-[420px] rounded-full bg-violet-600/20 blur-[120px]" />
@@ -316,14 +296,11 @@ export default function Register() {
       <main className="relative z-10 flex min-h-screen items-start justify-center px-4 py-6 sm:px-6 lg:items-center lg:py-10">
         <div className="grid w-full max-w-6xl overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.04] shadow-2xl shadow-black/50 backdrop-blur-2xl lg:grid-cols-2">
 
-          {/* =====================================================
-              LEFT PANEL
-          ===================================================== */}
-
+          {/* LEFT */}
           <section className="relative hidden overflow-hidden border-r border-white/10 bg-gradient-to-br from-[#17103F] via-[#100C2D] to-[#081633] p-10 lg:flex lg:flex-col lg:justify-between xl:p-14">
+
             <div className="relative z-10">
 
-              {/* Logo */}
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-blue-600 shadow-lg shadow-violet-600/25">
                   <Store size={24} />
@@ -343,7 +320,6 @@ export default function Register() {
                 </div>
               </div>
 
-              {/* Hero */}
               <div className="mt-24">
                 <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-500/10 px-3 py-1.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-violet-400" />
@@ -367,8 +343,8 @@ export default function Register() {
                 </p>
               </div>
 
-              {/* Features */}
               <div className="mt-12 space-y-4">
+
                 {[
                   "Easy product & inventory management",
                   "Fast and reliable billing",
@@ -388,12 +364,14 @@ export default function Register() {
                     </span>
                   </div>
                 ))}
+
               </div>
             </div>
 
-            {/* Security */}
             <div className="relative z-10 mt-12">
+
               <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-300">
                   <ShieldCheck size={19} />
                 </div>
@@ -407,24 +385,26 @@ export default function Register() {
                     Your account information is protected.
                   </p>
                 </div>
+
               </div>
 
               <p className="pt-5 text-xs text-white/35">
                 © 2026 POSFLOW. All rights reserved.
               </p>
+
             </div>
           </section>
 
-          {/* =====================================================
-              RIGHT PANEL
-          ===================================================== */}
-
+          {/* RIGHT */}
           <section className="bg-[#0B0920]/95 p-5 sm:p-8 lg:p-10 xl:p-12">
+
             <div className="mx-auto w-full max-w-xl">
 
-              {/* Mobile Logo */}
+              {/* Mobile logo */}
               <div className="mb-7 flex justify-center lg:hidden">
+
                 <div className="flex items-center gap-3">
+
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-blue-600">
                     <Store size={22} />
                   </div>
@@ -441,11 +421,13 @@ export default function Register() {
                       Retail Management
                     </p>
                   </div>
+
                 </div>
               </div>
 
               {/* Header */}
               <div className="mb-7">
+
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-violet-400/20 bg-gradient-to-br from-violet-500/15 to-blue-500/10 text-violet-300">
                   <UserPlus size={23} />
                 </div>
@@ -458,6 +440,7 @@ export default function Register() {
                   Enter your details below to create
                   your POSFLOW account.
                 </p>
+
               </div>
 
               {/* Form */}
@@ -466,7 +449,7 @@ export default function Register() {
                 className="space-y-4"
                 noValidate
               >
-                {/* Username */}
+
                 <FormInput
                   label="Username"
                   field="username"
@@ -474,8 +457,8 @@ export default function Register() {
                   autoComplete="username"
                 />
 
-                {/* First / Last Name */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
                   <FormInput
                     label="First Name"
                     field="first_name"
@@ -489,9 +472,9 @@ export default function Register() {
                     placeholder="Enter last name"
                     autoComplete="family-name"
                   />
+
                 </div>
 
-                {/* Email */}
                 <FormInput
                   label="Email"
                   field="email"
@@ -500,7 +483,6 @@ export default function Register() {
                   autoComplete="email"
                 />
 
-                {/* Phone */}
                 <FormInput
                   label="Phone"
                   field="phone"
@@ -509,7 +491,6 @@ export default function Register() {
                   autoComplete="tel"
                 />
 
-                {/* Password */}
                 <PasswordInput
                   label="Password"
                   field="password"
@@ -518,7 +499,6 @@ export default function Register() {
                   error={errors.password}
                 />
 
-                {/* Confirm Password */}
                 <PasswordInput
                   label="Confirm Password"
                   field="password2"
@@ -527,13 +507,15 @@ export default function Register() {
                   error={errors.password2}
                 />
 
-                {/* Password Requirements */}
+                {/* Password requirements */}
                 <div className="rounded-xl border border-white/10 bg-white/[0.025] px-4 py-3">
+
                   <p className="text-xs font-semibold text-white">
                     Password requirements
                   </p>
 
                   <div className="mt-2 flex items-center gap-2">
+
                     <CheckCircle2
                       size={14}
                       className={
@@ -552,10 +534,11 @@ export default function Register() {
                     >
                       At least 8 characters
                     </span>
+
                   </div>
                 </div>
 
-                {/* Submit */}
+                {/* Button */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -569,7 +552,6 @@ export default function Register() {
                   ) : (
                     <>
                       Create Account
-
                       <ArrowRight
                         size={17}
                         className="transition-transform duration-200 group-hover:translate-x-1"
@@ -577,10 +559,12 @@ export default function Register() {
                     </>
                   )}
                 </button>
+
               </form>
 
               {/* Login */}
               <div className="mt-7 border-t border-white/10 pt-6">
+
                 <p className="text-center text-sm text-white/75">
                   Already have an account?
 
@@ -591,9 +575,9 @@ export default function Register() {
                     Sign in
                   </Link>
                 </p>
+
               </div>
 
-              {/* Security */}
               <div className="mt-5 flex items-center justify-center gap-2 text-[11px] text-white/50">
                 <ShieldCheck size={13} />
 
@@ -601,8 +585,10 @@ export default function Register() {
                   Your information is securely protected
                 </span>
               </div>
+
             </div>
           </section>
+
         </div>
       </main>
     </div>
